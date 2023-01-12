@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.*
 import androidx.compose.material3.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import app.suhasdissa.whiteboard.ui.theme.WhiteboardAppTheme
 
 class MainActivity : ComponentActivity() {
@@ -16,7 +17,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             WhiteboardAppTheme {
-                // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
@@ -26,7 +26,7 @@ class MainActivity : ComponentActivity() {
                         topBar = {
                             TopAppBar(
                                 title = {
-                                    Text("Drawing App")
+                                    Text(stringResource(id = R.string.app_name))
                                 },
                                 actions = {}
                             )
