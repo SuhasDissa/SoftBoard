@@ -1,4 +1,4 @@
-package com.smarttoolfactory.composedrawingapp
+package app.suhasdissa.whiteboard
 
 import android.graphics.Paint
 import android.widget.Toast
@@ -13,16 +13,13 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.input.pointer.consumeDownChange
-import androidx.compose.ui.input.pointer.consumePositionChange
 import androidx.compose.ui.input.pointer.positionChange
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.smarttoolfactory.composedrawingapp.gesture.MotionEvent
-import com.smarttoolfactory.composedrawingapp.gesture.dragMotionEvent
-import com.smarttoolfactory.composedrawingapp.model.PathProperties
-import com.smarttoolfactory.composedrawingapp.ui.menu.DrawingPropertiesMenu
-import com.smarttoolfactory.composedrawingapp.ui.theme.backgroundColor
+import app.suhasdissa.whiteboard.gesture.MotionEvent
+import app.suhasdissa.whiteboard.gesture.dragMotionEvent
+import app.suhasdissa.whiteboard.model.PathProperties
+import app.suhasdissa.whiteboard.ui.menu.DrawingPropertiesMenu
 
 @Composable
 fun DrawingApp(paddingValues: PaddingValues) {
@@ -88,7 +85,7 @@ fun DrawingApp(paddingValues: PaddingValues) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(backgroundColor)
+            .padding(paddingValues)
     ) {
 
         val drawModifier = Modifier
@@ -97,35 +94,30 @@ fun DrawingApp(paddingValues: PaddingValues) {
             .fillMaxWidth()
             .weight(1f)
             .background(Color.White)
-//            .background(getRandomColor())
-            .dragMotionEvent(
-                onDragStart = { pointerInputChange ->
-                    motionEvent = MotionEvent.Down
-                    currentPosition = pointerInputChange.position
-                    pointerInputChange.consumeDownChange()
+            .dragMotionEvent(onDragStart = { pointerInputChange ->
+                motionEvent = MotionEvent.Down
+                currentPosition = pointerInputChange.position
+                if (pointerInputChange.pressed != pointerInputChange.previousPressed) pointerInputChange.consume()
 
-                },
-                onDrag = { pointerInputChange ->
-                    motionEvent = MotionEvent.Move
-                    currentPosition = pointerInputChange.position
+            }, onDrag = { pointerInputChange ->
+                motionEvent = MotionEvent.Move
+                currentPosition = pointerInputChange.position
 
-                    if (drawMode == DrawMode.Touch) {
-                        val change = pointerInputChange.positionChange()
-                        println("DRAG: $change")
-                        paths.forEach { entry ->
-                            val path: Path = entry.first
-                            path.translate(change)
-                        }
-                        currentPath.translate(change)
+                if (drawMode == DrawMode.Touch) {
+                    val change = pointerInputChange.positionChange()
+                    println("DRAG: $change")
+                    paths.forEach { entry ->
+                        val path: Path = entry.first
+                        path.translate(change)
                     }
-                    pointerInputChange.consumePositionChange()
-
-                },
-                onDragEnd = { pointerInputChange ->
-                    motionEvent = MotionEvent.Up
-                    pointerInputChange.consumeDownChange()
+                    currentPath.translate(change)
                 }
-            )
+                if (pointerInputChange.positionChange() != Offset.Zero) pointerInputChange.consume()
+
+            }, onDragEnd = { pointerInputChange ->
+                motionEvent = MotionEvent.Up
+                if (pointerInputChange.pressed != pointerInputChange.previousPressed) pointerInputChange.consume()
+            })
 
         Canvas(modifier = drawModifier) {
 
@@ -200,9 +192,7 @@ fun DrawingApp(paddingValues: PaddingValues) {
 
                     if (!property.eraseMode) {
                         drawPath(
-                            color = property.color,
-                            path = path,
-                            style = Stroke(
+                            color = property.color, path = path, style = Stroke(
                                 width = property.strokeWidth,
                                 cap = property.strokeCap,
                                 join = property.strokeJoin
@@ -212,14 +202,11 @@ fun DrawingApp(paddingValues: PaddingValues) {
 
                         // Source
                         drawPath(
-                            color = Color.Transparent,
-                            path = path,
-                            style = Stroke(
+                            color = Color.Transparent, path = path, style = Stroke(
                                 width = currentPathProperty.strokeWidth,
                                 cap = currentPathProperty.strokeCap,
                                 join = currentPathProperty.strokeJoin
-                            ),
-                            blendMode = BlendMode.Clear
+                            ), blendMode = BlendMode.Clear
                         )
                     }
                 }
@@ -228,9 +215,7 @@ fun DrawingApp(paddingValues: PaddingValues) {
 
                     if (!currentPathProperty.eraseMode) {
                         drawPath(
-                            color = currentPathProperty.color,
-                            path = currentPath,
-                            style = Stroke(
+                            color = currentPathProperty.color, path = currentPath, style = Stroke(
                                 width = currentPathProperty.strokeWidth,
                                 cap = currentPathProperty.strokeCap,
                                 join = currentPathProperty.strokeJoin
@@ -238,14 +223,11 @@ fun DrawingApp(paddingValues: PaddingValues) {
                         )
                     } else {
                         drawPath(
-                            color = Color.Transparent,
-                            path = currentPath,
-                            style = Stroke(
+                            color = Color.Transparent, path = currentPath, style = Stroke(
                                 width = currentPathProperty.strokeWidth,
                                 cap = currentPathProperty.strokeCap,
                                 join = currentPathProperty.strokeJoin
-                            ),
-                            blendMode = BlendMode.Clear
+                            ), blendMode = BlendMode.Clear
                         )
                     }
                 }
@@ -275,13 +257,12 @@ fun DrawingApp(paddingValues: PaddingValues) {
 //            drawText(text = canvasText.toString(), x = 0f, y = 60f, paint)
         }
 
-        DrawingPropertiesMenu(
-            modifier = Modifier
-                .padding(bottom = 8.dp, start = 8.dp, end = 8.dp)
-                .shadow(1.dp, RoundedCornerShape(8.dp))
-                .fillMaxWidth()
-                .background(Color.White)
-                .padding(4.dp),
+        DrawingPropertiesMenu(modifier = Modifier
+            .padding(bottom = 8.dp, start = 8.dp, end = 8.dp)
+            .shadow(1.dp, RoundedCornerShape(8.dp))
+            .fillMaxWidth()
+            .background(Color.White)
+            .padding(4.dp),
             pathProperties = currentPathProperty,
             drawMode = drawMode,
             onUndo = {
@@ -313,11 +294,11 @@ fun DrawingApp(paddingValues: PaddingValues) {
                 drawMode = it
                 currentPathProperty.eraseMode = (drawMode == DrawMode.Erase)
                 Toast.makeText(
-                    context, "pathProperty: ${currentPathProperty.hashCode()}, " +
-                            "Erase Mode: ${currentPathProperty.eraseMode}", Toast.LENGTH_SHORT
+                    context,
+                    "pathProperty: ${currentPathProperty.hashCode()}, " + "Erase Mode: ${currentPathProperty.eraseMode}",
+                    Toast.LENGTH_SHORT
                 ).show()
-            }
-        )
+            })
     }
 }
 

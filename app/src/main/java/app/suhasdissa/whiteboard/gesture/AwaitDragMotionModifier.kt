@@ -1,15 +1,15 @@
-package com.smarttoolfactory.composedrawingapp.gesture
+package app.suhasdissa.whiteboard.gesture
 
+import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.awaitTouchSlopOrCancellation
 import androidx.compose.foundation.gestures.drag
-import androidx.compose.foundation.gestures.forEachGesture
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.pointer.AwaitPointerEventScope
 import androidx.compose.ui.input.pointer.PointerInputChange
-import androidx.compose.ui.input.pointer.consumePositionChange
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.input.pointer.positionChange
 
 suspend fun AwaitPointerEventScope.awaitDragMotionEvent(
     onTouchEvent: (MotionEvent, PointerInputChange) -> Unit
@@ -27,7 +27,7 @@ suspend fun AwaitPointerEventScope.awaitDragMotionEvent(
             // 🔥🔥 If consumePositionChange() is not consumed drag does not
             // function properly.
             // Consuming position change causes change.positionChanged() to return false.
-            change.consumePositionChange()
+            if (change.positionChange() != Offset.Zero) change.consume()
         }
 
     if (change != null) {
@@ -47,10 +47,9 @@ suspend fun AwaitPointerEventScope.awaitDragMotionEvent(
 
 fun Modifier.dragMotionEvent(onTouchEvent: (MotionEvent, PointerInputChange) -> Unit) = this.then(
     Modifier.pointerInput(Unit) {
-        forEachGesture {
-            awaitPointerEventScope {
-                awaitDragMotionEvent(onTouchEvent)
-            }
+        awaitEachGesture {
+            awaitDragMotionEvent(onTouchEvent)
+
         }
     }
 )
@@ -74,7 +73,7 @@ suspend fun AwaitPointerEventScope.awaitDragMotionEvent(
             // 🔥🔥 If consumePositionChange() is not consumed drag does not
             // function properly.
             // Consuming position change causes change.positionChanged() to return false.
-            change.consumePositionChange()
+            if (change.positionChange() != Offset.Zero) change.consume()
         }
 
     if (change != null) {
@@ -98,10 +97,9 @@ fun Modifier.dragMotionEvent(
     onDragEnd: (PointerInputChange) -> Unit = {}
 ) = this.then(
     Modifier.pointerInput(Unit) {
-        forEachGesture {
-            awaitPointerEventScope {
-                awaitDragMotionEvent(onDragStart, onDrag, onDragEnd)
-            }
+        awaitEachGesture {
+            awaitDragMotionEvent(onDragStart, onDrag, onDragEnd)
+
         }
     }
 )

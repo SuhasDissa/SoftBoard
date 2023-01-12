@@ -1,4 +1,4 @@
-package com.smarttoolfactory.composedrawingapp.model
+package app.suhasdissa.whiteboard.model
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap

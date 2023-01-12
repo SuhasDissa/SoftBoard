@@ -1,4 +1,4 @@
-package com.smarttoolfactory.composedrawingapp
+package app.suhasdissa.whiteboard
 
 enum class DrawMode {
     Draw, Touch, Erase

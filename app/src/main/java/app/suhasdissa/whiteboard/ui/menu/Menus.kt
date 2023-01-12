@@ -1,4 +1,4 @@
-package com.smarttoolfactory.composedrawingapp.ui.menu
+package app.suhasdissa.whiteboard.ui.menu
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -10,6 +10,7 @@ import androidx.compose.material.icons.filled.Brush
 import androidx.compose.material.icons.filled.Redo
 import androidx.compose.material.icons.filled.TouchApp
 import androidx.compose.material.icons.filled.Undo
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,12 +26,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import com.smarttoolfactory.composedrawingapp.*
-import com.smarttoolfactory.composedrawingapp.R
-import com.smarttoolfactory.composedrawingapp.model.PathProperties
-import com.smarttoolfactory.composedrawingapp.ui.ColorSlider
-import com.smarttoolfactory.composedrawingapp.ui.ColorWheel
-import com.smarttoolfactory.composedrawingapp.ui.theme.Blue400
+import app.suhasdissa.whiteboard.*
+import app.suhasdissa.whiteboard.R
+import app.suhasdissa.whiteboard.model.PathProperties
+import app.suhasdissa.whiteboard.ui.ColorSlider
+import app.suhasdissa.whiteboard.ui.ColorWheel
 import kotlin.math.roundToInt
 
 @Composable
@@ -140,8 +140,7 @@ fun PropertiesMenuDialog(pathOption: PathProperties, onDismiss: () -> Unit) {
 
     Dialog(onDismissRequest = onDismiss) {
 
-        Card(
-            elevation = 2.dp,
+        ElevatedCard(
             shape = RoundedCornerShape(8.dp),
             modifier = Modifier.padding(vertical = 8.dp)
         ) {
@@ -149,7 +148,6 @@ fun PropertiesMenuDialog(pathOption: PathProperties, onDismiss: () -> Unit) {
 
                 Text(
                     text = "Properties",
-                    color = Blue400,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(start = 12.dp, top = 12.dp)
@@ -272,7 +270,6 @@ fun ColorSelectionDialog(
 
                 Text(
                     text = "Color",
-                    color = Blue400,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(top = 12.dp)
@@ -409,7 +406,7 @@ fun ColorSelectionDialog(
  * @param onSelected lambda to be invoked when an item is selected that returns
  * its index.
  */
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExposedSelectionMenu(
     title: String,
@@ -443,7 +440,7 @@ fun ExposedSelectionMenu(
                 )
             },
             colors = ExposedDropdownMenuDefaults.textFieldColors(
-                backgroundColor = Color.White,
+                containerColor = Color.White,
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
                 disabledIndicatorColor = Color.Transparent,
@@ -465,10 +462,9 @@ fun ExposedSelectionMenu(
                         expanded = false
                         selectedIndex = index
                         onSelected(selectedIndex)
-                    }
-                ) {
-                    Text(text = selectionOption)
-                }
+                    },
+                    text = { Text(text = selectionOption) }
+                )
             }
         }
     }

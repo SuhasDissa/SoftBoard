@@ -1,9 +1,12 @@
-package com.smarttoolfactory.composedrawingapp.ui
+package app.suhasdissa.whiteboard.ui
 
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Slider
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -13,7 +16,17 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.smarttoolfactory.composedrawingapp.ui.theme.gradientColors
+
+val gradientColors = listOf(
+    Color.Red,
+    Color.Magenta,
+    Color.Blue,
+    Color.Cyan,
+    Color.Green,
+    Color.Yellow,
+    Color.Red
+)
+
 
 /**
  * Simple circle with stroke to show rainbow colors as [Brush.sweepGradient]
@@ -25,11 +38,9 @@ fun ColorWheel(modifier: Modifier = Modifier) {
         val canvasWidth = size.width
         val canvasHeight = size.height
 
-        require(canvasWidth == canvasHeight,
-            lazyMessage = {
-                print("Canvas dimensions should be equal to each other")
-            }
-        )
+        require(canvasWidth == canvasHeight, lazyMessage = {
+            print("Canvas dimensions should be equal to each other")
+        })
         val cX = canvasWidth / 2
         val cY = canvasHeight / 2
         val canvasRadius = canvasWidth.coerceAtMost(canvasHeight) / 2f
@@ -65,13 +76,11 @@ fun ColorSlider(
 
         Text(text = title.substring(0, 1), color = titleColor, fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.width(8.dp))
-        Slider(
-            modifier = Modifier.weight(1f),
+        Slider(modifier = Modifier.weight(1f),
             value = rgb,
             onValueChange = { onColorChanged(it) },
             valueRange = valueRange,
-            onValueChangeFinished = {}
-        )
+            onValueChangeFinished = {})
 
         Spacer(modifier = Modifier.width(8.dp))
         Text(

@@ -12,5 +12,5 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-rootProject.name = "Compose Drawing App"
+rootProject.name = "Whiteboard App"
 include ':app'
