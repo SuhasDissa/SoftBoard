@@ -20,7 +20,7 @@ import app.suhasdissa.whiteboard.R
 import app.suhasdissa.whiteboard.model.PathProperties
 
 @Composable
-fun DrawingPropertiesMenu(
+fun MainToolbar(
     modifier: Modifier = Modifier,
     pathProperties: PathProperties,
     drawMode: DrawMode,
@@ -48,7 +48,7 @@ fun DrawingPropertiesMenu(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            IconButton(
+            /*IconButton(
                 onClick = {
                     currentDrawMode = if (currentDrawMode == DrawMode.Touch) {
                         DrawMode.Draw
@@ -63,7 +63,7 @@ fun DrawingPropertiesMenu(
                     contentDescription = null,
                     tint = if (currentDrawMode == DrawMode.Touch) Color.Black else Color.LightGray
                 )
-            }
+            }*/
             IconButton(
                 onClick = {
                     currentDrawMode = if (currentDrawMode == DrawMode.Erase) {
