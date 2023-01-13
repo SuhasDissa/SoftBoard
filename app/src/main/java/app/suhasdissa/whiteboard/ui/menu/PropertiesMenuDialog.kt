@@ -5,8 +5,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -15,34 +15,27 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import app.suhasdissa.whiteboard.model.PathProperties
+import app.suhasdissa.whiteboard.R
+import app.suhasdissa.whiteboard.data.PathProperties
 
 @Composable
 fun PropertiesMenuDialog(pathOption: PathProperties, onDismiss: () -> Unit) {
 
     var strokeWidth by remember { mutableStateOf(pathOption.strokeWidth) }
-    var strokeCap by remember { mutableStateOf(pathOption.strokeCap) }
-    var strokeJoin by remember { mutableStateOf(pathOption.strokeJoin) }
 
     Dialog(onDismissRequest = onDismiss) {
-
-        ElevatedCard(
-            shape = RoundedCornerShape(8.dp),
-            modifier = Modifier.padding(vertical = 8.dp)
-        ) {
+        ElevatedCard {
             Column(modifier = Modifier.padding(8.dp)) {
-
                 Text(
-                    text = "Properties",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
+                    text = stringResource(R.string.brush_settings_dialog),
+                    style = MaterialTheme.typography.headlineSmall,
                     modifier = Modifier.padding(start = 12.dp, top = 12.dp)
                 )
-
                 Canvas(
                     modifier = Modifier
                         .padding(horizontal = 24.dp, vertical = 20.dp)
@@ -58,14 +51,14 @@ fun PropertiesMenuDialog(pathOption: PathProperties, onDismiss: () -> Unit) {
                         path = path,
                         style = Stroke(
                             width = strokeWidth,
-                            cap = strokeCap,
-                            join = strokeJoin
+                            cap = StrokeCap.Round,
+                            join = StrokeJoin.Round
                         )
                     )
                 }
 
                 Text(
-                    text = "Stroke Width ${strokeWidth.toInt()}",
+                    text = stringResource(R.string.brush_size) +" ${strokeWidth.toInt()}",
                     fontSize = 16.sp,
                     modifier = Modifier.padding(horizontal = 12.dp)
                 )
@@ -78,47 +71,6 @@ fun PropertiesMenuDialog(pathOption: PathProperties, onDismiss: () -> Unit) {
                     },
                     valueRange = 1f..100f,
                     onValueChangeFinished = {}
-                )
-
-
-                ExposedSelectionMenu(title = "Stroke Cap",
-                    index = when (strokeCap) {
-                        StrokeCap.Butt -> 0
-                        StrokeCap.Round -> 1
-                        else -> 2
-                    },
-                    options = listOf("Butt", "Round", "Square"),
-                    onSelected = {
-                        println("STOKE CAP $it")
-                        strokeCap = when (it) {
-                            0 -> StrokeCap.Butt
-                            1 -> StrokeCap.Round
-                            else -> StrokeCap.Square
-                        }
-
-                        pathOption.strokeCap = strokeCap
-
-                    }
-                )
-
-                ExposedSelectionMenu(title = "Stroke Join",
-                    index = when (strokeJoin) {
-                        StrokeJoin.Miter -> 0
-                        StrokeJoin.Round -> 1
-                        else -> 2
-                    },
-                    options = listOf("Miter", "Round", "Bevel"),
-                    onSelected = {
-                        println("STOKE JOIN $it")
-
-                        strokeJoin = when (it) {
-                            0 -> StrokeJoin.Miter
-                            1 -> StrokeJoin.Round
-                            else -> StrokeJoin.Bevel
-                        }
-
-                        pathOption.strokeJoin = strokeJoin
-                    }
                 )
             }
         }

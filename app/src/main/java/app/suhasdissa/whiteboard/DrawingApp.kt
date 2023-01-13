@@ -5,7 +5,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.calculatePan
-import androidx.compose.foundation.gestures.calculateZoom
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -16,18 +15,16 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.BlendMode
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.withTransform
-import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.positionChange
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import app.suhasdissa.whiteboard.data.DrawMode
+import app.suhasdissa.whiteboard.data.PathProperties
 import app.suhasdissa.whiteboard.gesture.MotionEvent
-import app.suhasdissa.whiteboard.model.PathProperties
 import app.suhasdissa.whiteboard.ui.menu.MainToolbar
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -50,7 +47,7 @@ fun DrawingApp() {
             IconButton(onClick = { paths.clear() }) {
                 Icon(Icons.Filled.Delete, contentDescription = null)
             }
-            IconButton(onClick = {  }) {
+            IconButton(onClick = { }) {
                 Icon(Icons.Filled.Menu, contentDescription = null)
             }
         })
@@ -116,14 +113,12 @@ fun DrawingApp() {
                             currentPathProperty = PathProperties(
                                 strokeWidth = currentPathProperty.strokeWidth,
                                 color = currentPathProperty.color,
-                                strokeCap = currentPathProperty.strokeCap,
-                                strokeJoin = currentPathProperty.strokeJoin,
                                 eraseMode = currentPathProperty.eraseMode
                             )
                             pathsUndone.clear()
                             // reset states
                             currentPosition = Offset.Unspecified
-                            previousPosition = currentPosition
+                            previousPosition = Offset.Unspecified
                             motionEvent = MotionEvent.Idle
                         }
                         else -> Unit
@@ -141,8 +136,8 @@ fun DrawingApp() {
                                     drawPath(
                                         color = property.color, path = path, style = Stroke(
                                             width = property.strokeWidth,
-                                            cap = property.strokeCap,
-                                            join = property.strokeJoin
+                                            cap = StrokeCap.Round,
+                                            join = StrokeJoin.Round
                                         )
                                     )
                                 } else {
@@ -150,8 +145,8 @@ fun DrawingApp() {
                                     drawPath(
                                         color = Color.Transparent, path = path, style = Stroke(
                                             width = currentPathProperty.strokeWidth,
-                                            cap = currentPathProperty.strokeCap,
-                                            join = currentPathProperty.strokeJoin
+                                            cap = StrokeCap.Round,
+                                            join = StrokeJoin.Round
                                         ), blendMode = BlendMode.Clear
                                     )
                                 }
@@ -163,8 +158,8 @@ fun DrawingApp() {
                                         path = currentPath,
                                         style = Stroke(
                                             width = currentPathProperty.strokeWidth,
-                                            cap = currentPathProperty.strokeCap,
-                                            join = currentPathProperty.strokeJoin
+                                            cap = StrokeCap.Round,
+                                            join = StrokeJoin.Round
                                         )
                                     )
                                 } else {
@@ -173,8 +168,8 @@ fun DrawingApp() {
                                         path = currentPath,
                                         style = Stroke(
                                             width = currentPathProperty.strokeWidth,
-                                            cap = currentPathProperty.strokeCap,
-                                            join = currentPathProperty.strokeJoin
+                                            cap = StrokeCap.Round,
+                                            join = StrokeJoin.Round
                                         ),
                                         blendMode = BlendMode.Clear
                                     )
@@ -212,9 +207,6 @@ fun DrawingApp() {
                         pathsUndone.removeLast()
                         paths.add(Pair(lastPath, lastPathProperty))
                     }
-                },
-                onPathPropertiesChange = {
-                    motionEvent = MotionEvent.Idle
                 },
                 onDrawModeChanged = {
                     motionEvent = MotionEvent.Idle
