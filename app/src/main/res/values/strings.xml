@@ -1,3 +1,13 @@
 <resources>
-    <string name="app_name">Whiteboard App</string>
+    <string name="app_name">SoftBoard</string>
+    <string name="brush_settings_dialog">Brush Settings</string>
+    <string name="brush_size">Brush Size</string>
+    <string name="color_picker_dialog">Color</string>
+    <string name="old_color">Old Color</string>
+    <string name="new_color">New Color</string>
+    <string name="hue_slider">Hue</string>
+    <string name="saturation_slider">Saturation</string>
+    <string name="lightness_slider">Lightness</string>
+    <string name="cancel_button">Cancel</string>
+    <string name="ok_button">Ok</string>
 </resources>

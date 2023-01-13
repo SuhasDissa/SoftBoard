@@ -5,19 +5,24 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.Circle
+import androidx.compose.material.icons.filled.Redo
+import androidx.compose.material.icons.filled.Undo
+import androidx.compose.material.icons.filled.WaterDrop
+import androidx.compose.material.icons.outlined.Circle
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import app.suhasdissa.whiteboard.DrawMode
 import app.suhasdissa.whiteboard.R
-import app.suhasdissa.whiteboard.model.PathProperties
+import app.suhasdissa.whiteboard.data.DrawMode
+import app.suhasdissa.whiteboard.data.PathProperties
 
 @Composable
 fun MainToolbar(
@@ -26,10 +31,8 @@ fun MainToolbar(
     drawMode: DrawMode,
     onUndo: () -> Unit,
     onRedo: () -> Unit,
-    onPathPropertiesChange: (PathProperties) -> Unit,
     onDrawModeChanged: (DrawMode) -> Unit
 ) {
-
     val properties by rememberUpdatedState(newValue = pathProperties)
 
     var showColorDialog by remember { mutableStateOf(false) }
@@ -48,22 +51,6 @@ fun MainToolbar(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            /*IconButton(
-                onClick = {
-                    currentDrawMode = if (currentDrawMode == DrawMode.Touch) {
-                        DrawMode.Draw
-                    } else {
-                        DrawMode.Touch
-                    }
-                    onDrawModeChanged(currentDrawMode)
-                }
-            ) {
-                Icon(
-                    Icons.Filled.TouchApp,
-                    contentDescription = null,
-                    tint = if (currentDrawMode == DrawMode.Touch) Color.Black else Color.LightGray
-                )
-            }*/
             IconButton(
                 onClick = {
                     currentDrawMode = if (currentDrawMode == DrawMode.Erase) {
@@ -77,17 +64,15 @@ fun MainToolbar(
                 Icon(
                     painter = painterResource(id = R.drawable.ic_eraser_black_24dp),
                     contentDescription = null,
-                    tint = if (currentDrawMode == DrawMode.Erase) Color.Black else Color.LightGray
+                    tint = if (currentDrawMode == DrawMode.Erase) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurface
                 )
             }
-
-
             IconButton(onClick = { showColorDialog = !showColorDialog }) {
                 Icon(Icons.Filled.WaterDrop, contentDescription = null)
             }
 
             IconButton(onClick = { showPropertiesDialog = !showPropertiesDialog }) {
-                Icon(Icons.Filled.Brush, contentDescription = null)
+                Icon(Icons.Outlined.Circle, contentDescription = null)
             }
 
             IconButton(onClick = {

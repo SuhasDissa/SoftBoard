@@ -3,21 +3,19 @@ package app.suhasdissa.whiteboard.ui.menu
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Slider
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.core.graphics.ColorUtils.HSLToColor
 import androidx.core.graphics.ColorUtils.colorToHSL
+import app.suhasdissa.whiteboard.R
 import app.suhasdissa.whiteboard.ui.menu.items.HueBar
 
 @Composable
@@ -36,25 +34,17 @@ fun ColorSelectionDialog(
     val color = Color(HSLToColor(floatArrayOf(hue, saturation, lightness)))
 
     Dialog(onDismissRequest = onDismiss) {
-        BoxWithConstraints(
-            Modifier
-                .shadow(1.dp, RoundedCornerShape(8.dp))
-                .background(Color.White)
-        ) {
-
+        ElevatedCard {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.padding(horizontal = 10.dp)
             ) {
 
                 Text(
-                    text = "Color",
+                    text = stringResource(R.string.color_picker_dialog),
                     style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(top = 12.dp)
                 )
-
-                // Initial and Current Colors
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -70,7 +60,7 @@ fun ColorSelectionDialog(
                                 shape = RoundedCornerShape(topStart = 8.dp, bottomStart = 8.dp)
                             ), contentAlignment = Alignment.Center
                     ) {
-                        Text("Old Color",color = Color.White)
+                        Text(stringResource(R.string.old_color), color = Color.White)
                     }
                     Box(
                         modifier = Modifier
@@ -80,7 +70,7 @@ fun ColorSelectionDialog(
                                 color, shape = RoundedCornerShape(topEnd = 8.dp, bottomEnd = 8.dp)
                             ), contentAlignment = Alignment.Center
                     ) {
-                        Text("New Color",color=Color.White)
+                        Text(stringResource(R.string.new_color), color = Color.White)
                     }
                 }
                 Spacer(modifier = Modifier.height(8.dp))
@@ -90,7 +80,7 @@ fun ColorSelectionDialog(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
 
-                    Text(text = "Hue")
+                    Text(text = stringResource(R.string.hue_slider))
                     Spacer(modifier = Modifier.width(8.dp))
                     Column(modifier = Modifier.weight(1f)) {
                         HueBar(
@@ -113,7 +103,7 @@ fun ColorSelectionDialog(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
 
-                    Text(text = "Saturation")
+                    Text(text = stringResource(R.string.saturation_slider))
                     Spacer(modifier = Modifier.width(8.dp))
                     Slider(modifier = Modifier.weight(1f),
                         value = saturation,
@@ -121,15 +111,13 @@ fun ColorSelectionDialog(
                         valueRange = 0f..1f,
                         onValueChangeFinished = {})
                 }
-
                 Spacer(modifier = Modifier.height(4.dp))
-
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
 
-                    Text(text = "Lightness")
+                    Text(text = stringResource(R.string.lightness_slider))
                     Spacer(modifier = Modifier.width(8.dp))
                     Slider(modifier = Modifier.weight(1f),
                         value = lightness,
@@ -154,7 +142,7 @@ fun ColorSelectionDialog(
                             .weight(1f)
                             .fillMaxHeight()
                     ) {
-                        Text(text = "CANCEL")
+                        Text(text = stringResource(R.string.cancel_button))
                     }
                     TextButton(
                         modifier = Modifier
@@ -164,7 +152,7 @@ fun ColorSelectionDialog(
                             onPositiveClick(color)
                         },
                     ) {
-                        Text(text = "OK")
+                        Text(text = stringResource(R.string.ok_button))
                     }
                 }
             }
