@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.calculatePan
+import androidx.compose.foundation.gestures.calculateZoom
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -65,7 +66,7 @@ fun DrawingApp() {
                     awaitEachGesture {
                         val downEvent = awaitFirstDown()
                         motionEvent = MotionEvent.Down
-                        currentPosition = downEvent.position / canvasScale - canvasTranslate
+                        currentPosition = (downEvent.position - canvasTranslate) / canvasScale
                         if (downEvent.pressed != downEvent.previousPressed) downEvent.consume()
                         var canvasMoved = false
                         do {
@@ -73,11 +74,11 @@ fun DrawingApp() {
                             if (event.changes.size == 1) {
                                 if (canvasMoved) break
                                 currentPosition =
-                                    event.changes[0].position / canvasScale - canvasTranslate
+                                    (event.changes[0].position - canvasTranslate) / canvasScale
                                 motionEvent = MotionEvent.Move
                                 if (event.changes[0].positionChange() != Offset.Zero) event.changes[0].consume()
                             } else if (event.changes.size > 1) {
-                                //canvasScale *= event.calculateZoom()
+                                canvasScale *= event.calculateZoom()
                                 val offset = event.calculatePan()
                                 canvasTranslate += offset
                                 canvasMoved = true
@@ -125,65 +126,58 @@ fun DrawingApp() {
                     }
                     withTransform({
                         translate(canvasTranslate.x, canvasTranslate.y)
-                        scale(canvasScale, canvasScale)
+                        scale(canvasScale, canvasScale, Offset(0f, 0f))
                     }) {
-                        with(drawContext.canvas.nativeCanvas) {
-                            val checkPoint = saveLayer(null, null)
-                            paths.forEach {
-                                val path = it.first
-                                val property = it.second
-                                if (!property.eraseMode) {
-                                    drawPath(
-                                        color = property.color, path = path, style = Stroke(
-                                            width = property.strokeWidth,
-                                            cap = StrokeCap.Round,
-                                            join = StrokeJoin.Round
-                                        )
+                        paths.forEach {
+                            val path = it.first
+                            val property = it.second
+                            if (!property.eraseMode) {
+                                drawPath(
+                                    color = property.color, path = path, style = Stroke(
+                                        width = property.strokeWidth,
+                                        cap = StrokeCap.Round,
+                                        join = StrokeJoin.Round
                                     )
-                                } else {
-                                    // Source
-                                    drawPath(
-                                        color = Color.Transparent, path = path, style = Stroke(
-                                            width = currentPathProperty.strokeWidth,
-                                            cap = StrokeCap.Round,
-                                            join = StrokeJoin.Round
-                                        ), blendMode = BlendMode.Clear
-                                    )
-                                }
+                                )
+                            } else {
+                                // Source
+                                drawPath(
+                                    color = Color.Transparent, path = path, style = Stroke(
+                                        width = currentPathProperty.strokeWidth,
+                                        cap = StrokeCap.Round,
+                                        join = StrokeJoin.Round
+                                    ), blendMode = BlendMode.Clear
+                                )
                             }
-                            if (motionEvent != MotionEvent.Idle) {
-                                if (!currentPathProperty.eraseMode) {
-                                    drawPath(
-                                        color = currentPathProperty.color,
-                                        path = currentPath,
-                                        style = Stroke(
-                                            width = currentPathProperty.strokeWidth,
-                                            cap = StrokeCap.Round,
-                                            join = StrokeJoin.Round
-                                        )
+                        }
+                        if (motionEvent != MotionEvent.Idle) {
+                            if (!currentPathProperty.eraseMode) {
+                                drawPath(
+                                    color = currentPathProperty.color,
+                                    path = currentPath,
+                                    style = Stroke(
+                                        width = currentPathProperty.strokeWidth,
+                                        cap = StrokeCap.Round,
+                                        join = StrokeJoin.Round
                                     )
-                                } else {
-                                    drawPath(
-                                        color = Color.Transparent,
-                                        path = currentPath,
-                                        style = Stroke(
-                                            width = currentPathProperty.strokeWidth,
-                                            cap = StrokeCap.Round,
-                                            join = StrokeJoin.Round
-                                        ),
-                                        blendMode = BlendMode.Clear
+                                )
+                            } else {
+                                drawPath(
+                                    color = Color.Transparent, path = currentPath, style = Stroke(
+                                        width = currentPathProperty.strokeWidth,
+                                        cap = StrokeCap.Round,
+                                        join = StrokeJoin.Round
+                                    ), blendMode = BlendMode.Clear
+                                )
+                                drawCircle(
+                                    center = currentPosition,
+                                    color = Color.Black,
+                                    radius = currentPathProperty.strokeWidth / 2,
+                                    style = Stroke(
+                                        width = 2f
                                     )
-                                    drawCircle(
-                                        center = currentPosition,
-                                        color = Color.Black,
-                                        radius = currentPathProperty.strokeWidth / 2,
-                                        style = Stroke(
-                                            width = 2f
-                                        )
-                                    )
-                                }
+                                )
                             }
-                            restoreToCount(checkPoint)
                         }
                     }
                 }
