@@ -24,8 +24,8 @@ import androidx.compose.ui.input.pointer.positionChange
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import app.suhasdissa.whiteboard.data.DrawMode
+import app.suhasdissa.whiteboard.data.MotionEvent
 import app.suhasdissa.whiteboard.data.PathProperties
-import app.suhasdissa.whiteboard.gesture.MotionEvent
 import app.suhasdissa.whiteboard.ui.menu.MainToolbar
 
 @OptIn(ExperimentalMaterial3Api::class)
