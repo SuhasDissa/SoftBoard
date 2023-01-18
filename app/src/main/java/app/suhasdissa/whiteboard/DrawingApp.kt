@@ -2,10 +2,7 @@ package app.suhasdissa.whiteboard
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.awaitEachGesture
-import androidx.compose.foundation.gestures.awaitFirstDown
-import androidx.compose.foundation.gestures.calculatePan
-import androidx.compose.foundation.gestures.calculateZoom
+import androidx.compose.foundation.gestures.*
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -31,16 +28,16 @@ import app.suhasdissa.whiteboard.ui.menu.MainToolbar
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DrawingApp() {
-    val paths = remember { mutableStateListOf<Pair<Path, PathProperties>>() }
-    val pathsUndone = remember { mutableStateListOf<Pair<Path, PathProperties>>() }
+    val paths = remember { mutableStateListOf<PathProperties>() }
+    val pathsUndone = remember { mutableStateListOf<PathProperties>() }
     var motionEvent by remember { mutableStateOf(MotionEvent.Idle) }
     var currentPosition by remember { mutableStateOf(Offset.Unspecified) }
     var previousPosition by remember { mutableStateOf(Offset.Unspecified) }
     var drawMode by remember { mutableStateOf(DrawMode.Draw) }
-    var currentPath by remember { mutableStateOf(Path()) }
-    var currentPathProperty by remember { mutableStateOf(PathProperties()) }
-    var canvasTranslate by remember { mutableStateOf(Offset(0f, 0f)) }
-    var canvasScale by remember { mutableStateOf(1f) }
+    var currentPath by remember { mutableStateOf(PathProperties()) }
+    var canvasTranslate by remember { mutableStateOf(Offset(x = 0f, y = 0f)) }
+    var canvasScale by remember { mutableStateOf(value = 1f) }
+    var canvasPivot by remember { mutableStateOf(Offset(x=0f,y=0f)) }
     Scaffold(topBar = {
         TopAppBar(title = {
             Text(stringResource(id = R.string.app_name))
@@ -65,8 +62,8 @@ fun DrawingApp() {
                 .pointerInput(Unit) {
                     awaitEachGesture {
                         val downEvent = awaitFirstDown()
-                        motionEvent = MotionEvent.Down
                         currentPosition = (downEvent.position - canvasTranslate) / canvasScale
+                        motionEvent = MotionEvent.Down
                         if (downEvent.pressed != downEvent.previousPressed) downEvent.consume()
                         var canvasMoved = false
                         do {
@@ -78,9 +75,11 @@ fun DrawingApp() {
                                 motionEvent = MotionEvent.Move
                                 if (event.changes[0].positionChange() != Offset.Zero) event.changes[0].consume()
                             } else if (event.changes.size > 1) {
-                                canvasScale *= event.calculateZoom()
+                                //canvasPivot = event.calculateCentroid(true)
+                                val zoom = event.calculateZoom()
+                                canvasScale *= zoom
                                 val offset = event.calculatePan()
-                                canvasTranslate += offset
+                                canvasTranslate += offset //- (canvasPivot / zoom*2f)
                                 canvasMoved = true
                             }
                         } while (event.changes.any { it.pressed })
@@ -95,26 +94,28 @@ fun DrawingApp() {
                 Canvas(modifier = drawModifier) {
                     when (motionEvent) {
                         MotionEvent.Down -> {
-                            currentPath.moveTo(currentPosition.x, currentPosition.y)
+                            currentPath.path.moveTo(currentPosition.x, currentPosition.y)
                             previousPosition = currentPosition
                         }
                         MotionEvent.Move -> {
-                            currentPath.quadraticBezierTo(
-                                previousPosition.x,
-                                previousPosition.y,
-                                (previousPosition.x + currentPosition.x) / 2,
-                                (previousPosition.y + currentPosition.y) / 2
-                            )
+                            if(previousPosition != Offset.Unspecified) {
+                                currentPath.path.quadraticBezierTo(
+                                    x1 = previousPosition.x,
+                                    y1 = previousPosition.y,
+                                    x2 = (previousPosition.x + currentPosition.x) / 2,
+                                    y2 = (previousPosition.y + currentPosition.y) / 2
+                                )
+                            }
                             previousPosition = currentPosition
                         }
                         MotionEvent.Up -> {
-                            currentPath.lineTo(currentPosition.x, currentPosition.y)
-                            paths.add(Pair(currentPath, currentPathProperty))
-                            currentPath = Path()
-                            currentPathProperty = PathProperties(
-                                strokeWidth = currentPathProperty.strokeWidth,
-                                color = currentPathProperty.color,
-                                eraseMode = currentPathProperty.eraseMode
+                            currentPath.path.lineTo(currentPosition.x, currentPosition.y)
+                            paths.add(currentPath)
+                            currentPath = PathProperties(
+                                path = Path(),
+                                strokeWidth = currentPath.strokeWidth,
+                                color = currentPath.color,
+                                eraseMode = currentPath.eraseMode
                             )
                             pathsUndone.clear()
                             // reset states
@@ -126,86 +127,44 @@ fun DrawingApp() {
                     }
                     withTransform({
                         translate(canvasTranslate.x, canvasTranslate.y)
-                        scale(canvasScale, canvasScale, Offset(0f, 0f))
+                        scale(canvasScale, canvasScale, canvasPivot)
                     }) {
-                        paths.forEach {
-                            val path = it.first
-                            val property = it.second
-                            if (!property.eraseMode) {
-                                drawPath(
-                                    color = property.color, path = path, style = Stroke(
-                                        width = property.strokeWidth,
-                                        cap = StrokeCap.Round,
-                                        join = StrokeJoin.Round
-                                    )
-                                )
-                            } else {
-                                // Source
-                                drawPath(
-                                    color = Color.Transparent, path = path, style = Stroke(
-                                        width = currentPathProperty.strokeWidth,
-                                        cap = StrokeCap.Round,
-                                        join = StrokeJoin.Round
-                                    ), blendMode = BlendMode.Clear
-                                )
-                            }
+                        paths.forEach { path ->
+                            path.draw(this)
                         }
                         if (motionEvent != MotionEvent.Idle) {
-                            if (!currentPathProperty.eraseMode) {
-                                drawPath(
-                                    color = currentPathProperty.color,
-                                    path = currentPath,
-                                    style = Stroke(
-                                        width = currentPathProperty.strokeWidth,
-                                        cap = StrokeCap.Round,
-                                        join = StrokeJoin.Round
-                                    )
+                            currentPath.draw(this)
+                            drawCircle(
+                                center = currentPosition,
+                                color = Color.Gray,
+                                radius = currentPath.strokeWidth / 2,
+                                style = Stroke(
+                                    width = 1f
                                 )
-                            } else {
-                                drawPath(
-                                    color = Color.Transparent, path = currentPath, style = Stroke(
-                                        width = currentPathProperty.strokeWidth,
-                                        cap = StrokeCap.Round,
-                                        join = StrokeJoin.Round
-                                    ), blendMode = BlendMode.Clear
-                                )
-                                drawCircle(
-                                    center = currentPosition,
-                                    color = Color.Black,
-                                    radius = currentPathProperty.strokeWidth / 2,
-                                    style = Stroke(
-                                        width = 2f
-                                    )
-                                )
-                            }
+                            )
                         }
                     }
                 }
             }
             MainToolbar(modifier = Modifier,
-                pathProperties = currentPathProperty,
+                pathProperties = currentPath,
                 drawMode = drawMode,
                 onUndo = {
                     if (paths.isNotEmpty()) {
-                        val lastItem = paths.last()
-                        val lastPath = lastItem.first
-                        val lastPathProperty = lastItem.second
-                        paths.remove(lastItem)
-                        pathsUndone.add(Pair(lastPath, lastPathProperty))
+                        pathsUndone.add(paths.last())
+                        paths.removeLast()
                     }
                 },
                 onRedo = {
                     if (pathsUndone.isNotEmpty()) {
-                        val lastPath = pathsUndone.last().first
-                        val lastPathProperty = pathsUndone.last().second
+                        paths.add(pathsUndone.last())
                         pathsUndone.removeLast()
-                        paths.add(Pair(lastPath, lastPathProperty))
                     }
                 },
-                onDrawModeChanged = {
+                onDrawModeChanged = { mode ->
                     motionEvent = MotionEvent.Idle
-                    drawMode = it
-                    currentPathProperty.eraseMode = (drawMode == DrawMode.Erase)
+                    drawMode = mode
+                    currentPath.eraseMode = (drawMode == DrawMode.Erase)
                 })
         }
     }

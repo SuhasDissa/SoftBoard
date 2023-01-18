@@ -16,7 +16,6 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -58,7 +57,7 @@ fun PropertiesMenuDialog(pathOption: PathProperties, onDismiss: () -> Unit) {
                 }
 
                 Text(
-                    text = stringResource(R.string.brush_size) +" ${strokeWidth.toInt()}",
+                    text = stringResource(R.string.brush_size) + " ${strokeWidth.toInt()}",
                     fontSize = 16.sp,
                     modifier = Modifier.padding(horizontal = 12.dp)
                 )
