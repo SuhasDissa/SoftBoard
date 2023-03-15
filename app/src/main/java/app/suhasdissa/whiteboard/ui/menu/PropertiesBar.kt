@@ -11,50 +11,42 @@ import androidx.compose.material3.Slider
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import app.suhasdissa.whiteboard.data.PathProperties
+import androidx.lifecycle.viewmodel.compose.viewModel
+import app.suhasdissa.whiteboard.ui.WhiteboardViewModel
 
 @Composable
-fun PropertiesBar(currentPath:PathProperties,canvasScale:Float){
+fun PropertiesBar(vm: WhiteboardViewModel = viewModel()) {
     var showColorDialog by remember { mutableStateOf(false) }
+    var brushSize by remember { mutableStateOf(vm.currentPath.strokeWidth) }
     ElevatedCard(
         modifier = Modifier
             .padding(8.dp)
             .fillMaxWidth(0.8f)
     ) {
         Row(Modifier.fillMaxWidth()) {
-            var strokeWidth by remember { mutableStateOf(currentPath.strokeWidth) }
-            var currentColor by remember { mutableStateOf(currentPath.color) }
             Canvas(modifier = Modifier
                 .padding(horizontal = 24.dp, vertical = 20.dp)
                 .size(40.dp)
                 .clickable { showColorDialog = !showColorDialog }) {
                 drawCircle(
                     center = Offset(size.width / 2, size.height / 2),
-                    color = currentColor,
-                    radius = currentPath.strokeWidth * canvasScale / 2,
+                    color = vm.currentPath.color,
+                    radius = brushSize * vm.canvasScale / 2,
                 )
             }
             Slider(
                 modifier = Modifier.weight(1f),
-                value = strokeWidth,
-                onValueChange = {
-                    strokeWidth = it
-                    currentPath.strokeWidth = strokeWidth
+                value = brushSize,
+                onValueChange = { size ->
+                    brushSize = size
+                    vm.currentPath.strokeWidth = brushSize
                 },
                 valueRange = 1f..300f
             )
 
             if (showColorDialog) {
-                ColorSelectionDialog(currentColor,
-                    onDismiss = { showColorDialog = !showColorDialog },
-                    onNegativeClick = { showColorDialog = !showColorDialog },
-                    onPositiveClick = { color: Color ->
-                        showColorDialog = !showColorDialog
-                        currentColor = color
-                        currentPath.color = currentColor
-                    })
+                ColorSelectionDialog(onDismiss = { showColorDialog = !showColorDialog })
             }
         }
     }

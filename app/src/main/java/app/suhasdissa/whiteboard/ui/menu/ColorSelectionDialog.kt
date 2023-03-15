@@ -14,18 +14,19 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.core.graphics.ColorUtils.HSLToColor
 import androidx.core.graphics.ColorUtils.colorToHSL
+import androidx.lifecycle.viewmodel.compose.viewModel
 import app.suhasdissa.whiteboard.R
+import app.suhasdissa.whiteboard.ui.WhiteboardViewModel
 import app.suhasdissa.whiteboard.ui.menu.items.HueBar
 
 @Composable
 fun ColorSelectionDialog(
-    initialColor: Color,
+
     onDismiss: () -> Unit,
-    onNegativeClick: () -> Unit,
-    onPositiveClick: (Color) -> Unit
+    vm: WhiteboardViewModel = viewModel()
 ) {
     val initialHSL by remember { mutableStateOf(floatArrayOf(0f, 0f, 0f)) }
-    colorToHSL(initialColor.toArgb(), initialHSL)
+    colorToHSL(vm.currentPath.color.toArgb(), initialHSL)
     var hue by remember { mutableStateOf(initialHSL[0]) } // [0,360)
     var saturation by remember { mutableStateOf(initialHSL[1]) } //[0,1]
     var lightness by remember { mutableStateOf(initialHSL[2]) }// [0,1]
@@ -55,7 +56,7 @@ fun ColorSelectionDialog(
                             .weight(1f)
                             .height(40.dp)
                             .background(
-                                initialColor,
+                                vm.currentPath.color,
                                 shape = RoundedCornerShape(topStart = 8.dp, bottomStart = 8.dp)
                             ), contentAlignment = Alignment.Center
                     ) {
@@ -137,7 +138,7 @@ fun ColorSelectionDialog(
                 ) {
 
                     TextButton(
-                        onClick = onNegativeClick, modifier = Modifier
+                        onClick = onDismiss, modifier = Modifier
                             .weight(1f)
                             .fillMaxHeight()
                     ) {
@@ -148,7 +149,8 @@ fun ColorSelectionDialog(
                             .weight(1f)
                             .fillMaxHeight(),
                         onClick = {
-                            onPositiveClick(color)
+                            vm.currentPath.color = color
+                            onDismiss()
                         },
                     ) {
                         Text(text = stringResource(R.string.ok_button))

@@ -17,19 +17,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import app.suhasdissa.whiteboard.R
 import app.suhasdissa.whiteboard.data.DrawMode
+import app.suhasdissa.whiteboard.ui.WhiteboardViewModel
 
 @Composable
 fun MainToolbar(
-    modifier: Modifier = Modifier,
-    drawMode: DrawMode,
-    onUndo: () -> Unit,
-    onRedo: () -> Unit,
-    onDrawModeChanged: (DrawMode) -> Unit
+    modifier: Modifier = Modifier, vm: WhiteboardViewModel = viewModel()
 ) {
-    var currentDrawMode = drawMode
-
     ElevatedCard(
         modifier = modifier
             .padding(8.dp)
@@ -42,7 +38,7 @@ fun MainToolbar(
             verticalArrangement = Arrangement.SpaceEvenly
         ) {
             IconButton(onClick = {
-                currentDrawMode = when (currentDrawMode) {
+                vm.drawMode = when (vm.drawMode) {
                     DrawMode.Eraser -> {
                         DrawMode.Pen
                     }
@@ -50,14 +46,13 @@ fun MainToolbar(
                         DrawMode.Eraser
                     }
                 }
-                onDrawModeChanged(currentDrawMode)
             }) {
-                when (currentDrawMode) {
+                when (vm.drawMode) {
                     DrawMode.Pen -> {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_eraser_black_24dp),
                             contentDescription = null,
-                            tint = if (currentDrawMode == DrawMode.Eraser) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurface
+                            tint = if (vm.drawMode == DrawMode.Eraser) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurface
                         )
                     }
                     DrawMode.Eraser -> {
@@ -66,13 +61,19 @@ fun MainToolbar(
                 }
             }
             IconButton(onClick = {
-                onUndo()
+                if (vm.paths.isNotEmpty()) {
+                    vm.pathsUndone.add(vm.paths.last())
+                    vm.paths.removeLast()
+                }
             }) {
                 Icon(Icons.Filled.Undo, contentDescription = null)
             }
 
             IconButton(onClick = {
-                onRedo()
+                if (vm.pathsUndone.isNotEmpty()) {
+                    vm.paths.add(vm.pathsUndone.last())
+                    vm.pathsUndone.removeLast()
+                }
             }) {
                 Icon(Icons.Filled.Redo, contentDescription = null)
             }
