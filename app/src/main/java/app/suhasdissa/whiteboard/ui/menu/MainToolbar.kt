@@ -13,6 +13,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -37,8 +41,9 @@ fun MainToolbar(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly
         ) {
+            var drawMode by remember{mutableStateOf(vm.currentPath.drawMode)}
             IconButton(onClick = {
-                vm.drawMode = when (vm.drawMode) {
+                drawMode = when (drawMode) {
                     DrawMode.Eraser -> {
                         DrawMode.Pen
                     }
@@ -46,13 +51,14 @@ fun MainToolbar(
                         DrawMode.Eraser
                     }
                 }
+                vm.currentPath.drawMode = drawMode
             }) {
-                when (vm.drawMode) {
+                when (drawMode) {
                     DrawMode.Pen -> {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_eraser_black_24dp),
                             contentDescription = null,
-                            tint = if (vm.drawMode == DrawMode.Eraser) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurface
+                            tint = if (drawMode == DrawMode.Eraser) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurface
                         )
                     }
                     DrawMode.Eraser -> {

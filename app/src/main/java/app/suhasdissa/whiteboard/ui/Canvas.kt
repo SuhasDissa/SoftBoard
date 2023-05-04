@@ -1,5 +1,3 @@
-@file:Suppress("NAME_SHADOWING")
-
 package app.suhasdissa.whiteboard.ui
 
 
@@ -29,6 +27,10 @@ import app.suhasdissa.whiteboard.data.PathProperties
 fun MainCanvas(
     vm: WhiteboardViewModel = viewModel()
 ) {
+    //val context = LocalContext.current
+
+    // TODO : Textured Brushes
+    // val bitmap = remember { BitmapFactory.decodeResource(context.resources, R.drawable.chalk100) }
 
     val drawModifier = Modifier
         .fillMaxSize()
@@ -36,8 +38,7 @@ fun MainCanvas(
         .pointerInput(Unit) {
             awaitEachGesture {
                 val downEvent = awaitFirstDown()
-                vm.currentPosition =
-                    (downEvent.position - vm.canvasTranslate) / vm.canvasScale
+                vm.currentPosition = (downEvent.position - vm.canvasTranslate) / vm.canvasScale
                 vm.motionEvent = MotionEvent.Down
                 if (downEvent.pressed != downEvent.previousPressed) downEvent.consume()
                 var canvasMoved = false
@@ -77,6 +78,7 @@ fun MainCanvas(
                             vm.currentPosition.x, vm.currentPosition.y
                         )
                     }
+
                     MotionEvent.Move -> {
                         vm.currentPath.path.lineTo(
                             vm.currentPosition.x, vm.currentPosition.y
@@ -90,6 +92,7 @@ fun MainCanvas(
                             )
                         )
                     }
+
                     MotionEvent.Up -> {
                         vm.currentPath.path.lineTo(
                             vm.currentPosition.x, vm.currentPosition.y
@@ -106,7 +109,7 @@ fun MainCanvas(
                     }
                 }
                 vm.paths.forEach { path ->
-                    path.draw(this@withTransform)
+                    path.draw(this@withTransform /*, bitmap*/)
                 }
                 restoreToCount(checkPoint)
             }
