@@ -9,5 +9,7 @@
     <string name="saturation_slider">Saturation</string>
     <string name="lightness_slider">Lightness</string>
     <string name="cancel_button">Cancel</string>
-    <string name="ok_button">Ok</string>
+    <string name="ok_button">OK</string>
+    <string name="pan_mode" />
+    <string name="change_brush_width">Change Brush Width</string>
 </resources>

@@ -3,7 +3,12 @@ package app.suhasdissa.whiteboard.data
 import android.graphics.Bitmap
 import android.graphics.BitmapShader
 import android.graphics.Shader
-import androidx.compose.ui.graphics.*
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.ShaderBrush
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 
@@ -16,7 +21,6 @@ class PathProperties(
     fun draw(scope: DrawScope, bitmap: Bitmap? = null) {
         when (drawMode) {
             DrawMode.Pen -> {
-
                 if (bitmap != null) {
                     val brush = ShaderBrush(
                         shader = BitmapShader(
@@ -44,6 +48,7 @@ class PathProperties(
                     )
                 }
             }
+
             DrawMode.Eraser -> {
                 scope.drawPath(
                     color = Color.Transparent,
@@ -56,6 +61,8 @@ class PathProperties(
                     blendMode = BlendMode.Clear
                 )
             }
+
+            DrawMode.None -> {}
         }
     }
 }
