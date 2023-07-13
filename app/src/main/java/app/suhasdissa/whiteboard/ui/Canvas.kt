@@ -53,7 +53,7 @@ fun MainCanvas(
                     } else if (event.changes.size > 1) {
                         //canvasPivot = event.calculateCentroid(true)
                         val zoom = event.calculateZoom()
-                        vm.canvasScale *= zoom
+                        vm.canvasScale = (vm.canvasScale * zoom).coerceIn(0.5f..2f)
                         val offset = event.calculatePan()
                         vm.canvasTranslate += offset //- (canvasPivot / zoom*2f)
                         canvasMoved = true
@@ -106,6 +106,7 @@ fun MainCanvas(
                         vm.pathsUndone.clear()
                         vm.currentPosition = Offset.Unspecified
                         vm.motionEvent = MotionEvent.Idle
+                        vm.canvasSize = this@Canvas.size
                     }
                 }
                 vm.paths.forEach { path ->
