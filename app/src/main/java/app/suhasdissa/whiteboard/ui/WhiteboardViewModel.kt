@@ -11,6 +11,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import app.suhasdissa.whiteboard.data.ExportFormat
 import app.suhasdissa.whiteboard.data.MotionEvent
 import app.suhasdissa.whiteboard.data.PathProperties
 import app.suhasdissa.whiteboard.util.StorageHelper
@@ -33,8 +34,7 @@ class WhiteboardViewModel : ViewModel() {
     var canvasTranslate by mutableStateOf(Offset(x = 0f, y = 0f))
     val canvasPivot by mutableStateOf(Offset(x = 0f, y = 0f))
 
-    fun saveBitmap() {
-
+    fun saveBitmap(format: ExportFormat) {
         if (canvasSize != null && paths.isNotEmpty()) {
             viewModelScope.launch {
                 withContext(Dispatchers.IO) {
@@ -45,15 +45,19 @@ class WhiteboardViewModel : ViewModel() {
                             Bitmap.Config.ARGB_8888
                         )
                     val canvas = Canvas(bitmap)
+                    format.backgroundColor?.let { bgColor ->
+                        canvas.drawPaint(bgColor)
+                    }
                     canvas.translate(canvasTranslate.x, canvasTranslate.y)
                     canvas.scale(canvasScale, canvasScale)
-                    val outputStream = FileOutputStream(StorageHelper.getOutputFile("png"))
+                    val outputStream =
+                        FileOutputStream(StorageHelper.getOutputFile(format.extension))
 
                     paths.forEach { path ->
                         path.drawNative(canvas)
                     }
 
-                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+                    bitmap.compress(format.format, 100, outputStream)
 
                     outputStream.flush()
                     outputStream.close()
