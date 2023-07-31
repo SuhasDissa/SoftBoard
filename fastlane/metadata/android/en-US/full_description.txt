@@ -1,0 +1,4 @@
+SoftBoard is a simple Whiteboard app for android.
+It support using multiple colors, brush sizes.
+App has an infinite canvas to draw whatever you want.
+You can export your drawings as PNG or JPEG.
