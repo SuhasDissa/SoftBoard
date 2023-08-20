@@ -35,7 +35,7 @@ fun PropertiesBar(vm: WhiteboardViewModel = viewModel()) {
             drawCircle(
                 center = Offset(size.width / 2, size.height / 2),
                 color = vm.currentPath.color,
-                radius = brushSize * vm.canvasScale / 2
+                radius = brushSize * vm.canvasState.scale / 2
             )
         }
         Slider(

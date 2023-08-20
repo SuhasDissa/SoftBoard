@@ -18,6 +18,8 @@ import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.positionChange
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.unit.toSize
 import androidx.lifecycle.viewmodel.compose.viewModel
 import app.suhasdissa.whiteboard.data.MotionEvent
 import app.suhasdissa.whiteboard.data.PathProperties
@@ -34,10 +36,15 @@ fun MainCanvas(
     val drawModifier = Modifier
         .fillMaxSize()
         .background(MaterialTheme.colorScheme.background)
+        .onSizeChanged {
+            vm.canvasState.size = it.toSize()
+            vm.canvasState.translation = Offset(it.width / 2f, it.height / 2f)
+        }
         .pointerInput(Unit) {
             awaitEachGesture {
                 val downEvent = awaitFirstDown()
-                vm.currentPosition = (downEvent.position - vm.canvasTranslate) / vm.canvasScale
+                vm.currentPosition =
+                    (downEvent.position - vm.canvasState.translation) / vm.canvasState.scale
                 vm.motionEvent = MotionEvent.Down
                 if (downEvent.pressed != downEvent.previousPressed) downEvent.consume()
                 var canvasMoved = false
@@ -46,15 +53,14 @@ fun MainCanvas(
                     if (event.changes.size == 1) {
                         if (canvasMoved) break
                         vm.currentPosition =
-                            (event.changes[0].position - vm.canvasTranslate) / vm.canvasScale
+                            (event.changes[0].position - vm.canvasState.translation) / vm.canvasState.scale
                         vm.motionEvent = MotionEvent.Move
                         if (event.changes[0].positionChange() != Offset.Zero) event.changes[0].consume()
                     } else if (event.changes.size > 1) {
-                        // canvasPivot = event.calculateCentroid(true)
                         val zoom = event.calculateZoom()
-                        vm.canvasScale = (vm.canvasScale * zoom).coerceIn(0.5f..2f)
-                        val offset = event.calculatePan()
-                        vm.canvasTranslate += offset // - (canvasPivot / zoom*2f)
+                        vm.canvasState.scale = (vm.canvasState.scale * zoom).coerceIn(0.5f..2f)
+                        val pan = event.calculatePan()
+                        vm.canvasState.translation += pan
                         canvasMoved = true
                     }
                 } while (event.changes.any { it.pressed })
@@ -63,8 +69,8 @@ fun MainCanvas(
         }
     Canvas(modifier = drawModifier) {
         withTransform({
-            translate(vm.canvasTranslate.x, vm.canvasTranslate.y)
-            scale(vm.canvasScale, vm.canvasScale, vm.canvasPivot)
+            translate(vm.canvasState.translation.x, vm.canvasState.translation.y)
+            scale(vm.canvasState.scale, vm.canvasState.scale, vm.canvasState.pivot)
         }) {
             with(drawContext.canvas.nativeCanvas) {
                 val checkPoint = saveLayer(null, null)
@@ -107,7 +113,6 @@ fun MainCanvas(
                         vm.pathsUndone.clear()
                         vm.currentPosition = Offset.Unspecified
                         vm.motionEvent = MotionEvent.Idle
-                        vm.canvasSize = this@Canvas.size
                     }
                 }
                 vm.paths.forEach { path ->
