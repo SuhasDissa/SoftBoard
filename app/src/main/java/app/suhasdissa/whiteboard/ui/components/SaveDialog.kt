@@ -33,14 +33,16 @@ fun SaveDialog(
     val context = LocalContext.current
     Dialog(onDismissRequest) {
         Surface(
-            modifier = Modifier.width(300.dp), shape = RoundedCornerShape(10.dp)
+            modifier = Modifier.width(300.dp),
+            shape = RoundedCornerShape(10.dp)
         ) {
             Column(modifier = Modifier.padding(10.dp)) {
                 Text("Select Export Format", style = MaterialTheme.typography.titleLarge)
                 ChipSelector(
                     title = "Export Format",
                     selectedValue = exportFormat,
-                    onSelectionChanged = { exportFormat = it })
+                    onSelectionChanged = { exportFormat = it }
+                )
 
                 Row(Modifier.fillMaxWidth()) {
                     Button(onClick = { onDismissRequest() }) {

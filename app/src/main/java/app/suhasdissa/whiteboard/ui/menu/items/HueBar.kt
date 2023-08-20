@@ -25,7 +25,6 @@ val rainbowColors = listOf(
 
 @Composable
 fun HueBar(modifier: Modifier = Modifier) {
-
     Canvas(modifier = modifier) {
         val canvasWidth = size.width
         val canvasHeight = size.height

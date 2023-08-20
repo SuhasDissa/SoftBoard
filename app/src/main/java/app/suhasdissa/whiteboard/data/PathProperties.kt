@@ -40,8 +40,9 @@ class PathProperties(
                     strokeWidth = this@PathProperties.strokeWidth
                     strokeCap = Paint.Cap.ROUND
                     strokeJoin = Paint.Join.ROUND
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                         blendMode = android.graphics.BlendMode.CLEAR
+                    }
                 }
             }
         }
@@ -61,7 +62,9 @@ class PathProperties(
                         )
                     )
                     scope.drawPath(
-                        path, brush, style = Stroke(
+                        path,
+                        brush,
+                        style = Stroke(
                             width = strokeWidth,
                             cap = StrokeCap.Round,
                             join = StrokeJoin.Round

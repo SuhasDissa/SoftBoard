@@ -82,7 +82,6 @@ fun MainToolbar(
                             ColorButton(color = it)
                         }
                     }
-
                 }
             }
             Row(

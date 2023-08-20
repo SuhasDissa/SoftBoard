@@ -45,8 +45,8 @@ fun ColorSelectionDialog(
     val initialHSL by remember { mutableStateOf(floatArrayOf(0f, 0f, 0f)) }
     colorToHSL(vm.currentPath.color.toArgb(), initialHSL)
     var hue by remember { mutableFloatStateOf(initialHSL[0]) } // [0,360)
-    var saturation by remember { mutableFloatStateOf(initialHSL[1]) } //[0,1]
-    var lightness by remember { mutableFloatStateOf(initialHSL[2]) }// [0,1]
+    var saturation by remember { mutableFloatStateOf(initialHSL[1]) } // [0,1]
+    var lightness by remember { mutableFloatStateOf(initialHSL[2]) } // [0,1]
 
     val color = Color(HSLToColor(floatArrayOf(hue, saturation, lightness)))
 
@@ -56,7 +56,6 @@ fun ColorSelectionDialog(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.padding(horizontal = 10.dp)
             ) {
-
                 Text(
                     text = stringResource(R.string.color_picker_dialog),
                     style = MaterialTheme.typography.headlineSmall,
@@ -67,7 +66,6 @@ fun ColorSelectionDialog(
                         .fillMaxWidth()
                         .padding(horizontal = 50.dp, vertical = 20.dp)
                 ) {
-
                     Box(
                         modifier = Modifier
                             .weight(1f)
@@ -75,7 +73,8 @@ fun ColorSelectionDialog(
                             .background(
                                 vm.currentPath.color,
                                 shape = RoundedCornerShape(topStart = 8.dp, bottomStart = 8.dp)
-                            ), contentAlignment = Alignment.Center
+                            ),
+                        contentAlignment = Alignment.Center
                     ) {
                         Text(stringResource(R.string.old_color), color = Color.White)
                     }
@@ -84,8 +83,10 @@ fun ColorSelectionDialog(
                             .weight(1f)
                             .height(40.dp)
                             .background(
-                                color, shape = RoundedCornerShape(topEnd = 8.dp, bottomEnd = 8.dp)
-                            ), contentAlignment = Alignment.Center
+                                color,
+                                shape = RoundedCornerShape(topEnd = 8.dp, bottomEnd = 8.dp)
+                            ),
+                        contentAlignment = Alignment.Center
                     ) {
                         Text(stringResource(R.string.new_color), color = Color.White)
                     }
@@ -96,7 +97,6 @@ fun ColorSelectionDialog(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-
                     Text(text = stringResource(R.string.hue_slider))
                     Spacer(modifier = Modifier.width(8.dp))
                     Column(modifier = Modifier.weight(1f)) {
@@ -105,13 +105,14 @@ fun ColorSelectionDialog(
                                 .fillMaxWidth()
                                 .height(20.dp)
                         )
-                        Slider(modifier = Modifier,
+                        Slider(
+                            modifier = Modifier,
                             value = hue,
                             onValueChange = { hue = it },
                             valueRange = 0f..360f,
-                            onValueChangeFinished = {})
+                            onValueChangeFinished = {}
+                        )
                     }
-
                 }
                 Spacer(modifier = Modifier.height(4.dp))
 
@@ -119,28 +120,30 @@ fun ColorSelectionDialog(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-
                     Text(text = stringResource(R.string.saturation_slider))
                     Spacer(modifier = Modifier.width(8.dp))
-                    Slider(modifier = Modifier.weight(1f),
+                    Slider(
+                        modifier = Modifier.weight(1f),
                         value = saturation,
                         onValueChange = { saturation = it },
                         valueRange = 0f..1f,
-                        onValueChangeFinished = {})
+                        onValueChangeFinished = {}
+                    )
                 }
                 Spacer(modifier = Modifier.height(4.dp))
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-
                     Text(text = stringResource(R.string.lightness_slider))
                     Spacer(modifier = Modifier.width(8.dp))
-                    Slider(modifier = Modifier.weight(1f),
+                    Slider(
+                        modifier = Modifier.weight(1f),
                         value = lightness,
                         onValueChange = { lightness = it },
                         valueRange = 0f..1f,
-                        onValueChangeFinished = {})
+                        onValueChangeFinished = {}
+                    )
                 }
                 Spacer(modifier = Modifier.height(24.dp))
 
@@ -153,9 +156,9 @@ fun ColorSelectionDialog(
                     verticalAlignment = Alignment.CenterVertically
 
                 ) {
-
                     TextButton(
-                        onClick = onDismiss, modifier = Modifier
+                        onClick = onDismiss,
+                        modifier = Modifier
                             .weight(1f)
                             .fillMaxHeight()
                     ) {
@@ -168,7 +171,7 @@ fun ColorSelectionDialog(
                         onClick = {
                             vm.currentPath.color = color
                             onDismiss()
-                        },
+                        }
                     ) {
                         Text(text = stringResource(R.string.ok_button))
                     }

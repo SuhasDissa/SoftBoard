@@ -15,11 +15,10 @@ import app.suhasdissa.whiteboard.data.ExportFormat
 import app.suhasdissa.whiteboard.data.MotionEvent
 import app.suhasdissa.whiteboard.data.PathProperties
 import app.suhasdissa.whiteboard.util.StorageHelper
+import java.io.FileOutputStream
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.FileOutputStream
-
 
 class WhiteboardViewModel : ViewModel() {
     var paths = mutableStateListOf<PathProperties>()
@@ -61,7 +60,6 @@ class WhiteboardViewModel : ViewModel() {
 
                     outputStream.flush()
                     outputStream.close()
-
                 }
             }
         }

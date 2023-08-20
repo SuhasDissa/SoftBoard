@@ -1,6 +1,5 @@
 package app.suhasdissa.whiteboard.ui
 
-
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.awaitEachGesture
@@ -27,7 +26,7 @@ import app.suhasdissa.whiteboard.data.PathProperties
 fun MainCanvas(
     vm: WhiteboardViewModel = viewModel()
 ) {
-    //val context = LocalContext.current
+    // val context = LocalContext.current
 
     // TODO : Textured Brushes
     // val bitmap = remember { BitmapFactory.decodeResource(context.resources, R.drawable.chalk100) }
@@ -51,16 +50,15 @@ fun MainCanvas(
                         vm.motionEvent = MotionEvent.Move
                         if (event.changes[0].positionChange() != Offset.Zero) event.changes[0].consume()
                     } else if (event.changes.size > 1) {
-                        //canvasPivot = event.calculateCentroid(true)
+                        // canvasPivot = event.calculateCentroid(true)
                         val zoom = event.calculateZoom()
                         vm.canvasScale = (vm.canvasScale * zoom).coerceIn(0.5f..2f)
                         val offset = event.calculatePan()
-                        vm.canvasTranslate += offset //- (canvasPivot / zoom*2f)
+                        vm.canvasTranslate += offset // - (canvasPivot / zoom*2f)
                         canvasMoved = true
                     }
                 } while (event.changes.any { it.pressed })
                 vm.motionEvent = MotionEvent.Up
-
             }
         }
     Canvas(modifier = drawModifier) {
@@ -75,13 +73,15 @@ fun MainCanvas(
                     MotionEvent.Down -> {
                         vm.paths.add(vm.currentPath)
                         vm.currentPath.path.moveTo(
-                            vm.currentPosition.x, vm.currentPosition.y
+                            vm.currentPosition.x,
+                            vm.currentPosition.y
                         )
                     }
 
                     MotionEvent.Move -> {
                         vm.currentPath.path.lineTo(
-                            vm.currentPosition.x, vm.currentPosition.y
+                            vm.currentPosition.x,
+                            vm.currentPosition.y
                         )
                         drawCircle(
                             center = vm.currentPosition,
@@ -95,7 +95,8 @@ fun MainCanvas(
 
                     MotionEvent.Up -> {
                         vm.currentPath.path.lineTo(
-                            vm.currentPosition.x, vm.currentPosition.y
+                            vm.currentPosition.x,
+                            vm.currentPosition.y
                         )
                         vm.currentPath = PathProperties(
                             path = Path(),

@@ -17,14 +17,16 @@ fun ColorButton(
     color: Color,
     vm: WhiteboardViewModel = viewModel()
 ) {
-    Canvas(modifier = Modifier
-        .padding(8.dp)
-        .size(24.dp)
-        .clickable { vm.currentPath.color = color }) {
+    Canvas(
+        modifier = Modifier
+            .padding(8.dp)
+            .size(24.dp)
+            .clickable { vm.currentPath.color = color }
+    ) {
         drawCircle(
             center = Offset(size.width / 2, size.height / 2),
             color = color,
-            radius = size.width / 2,
+            radius = size.width / 2
         )
     }
 }
